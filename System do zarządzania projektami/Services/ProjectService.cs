@@ -12,7 +12,7 @@ namespace System_do_zarządzania_projektami.Services
     }
     public interface IProjectService
     {
-        public void Create(Project project);
+        public Project Create(Project project);
         public void Delete(int id);
         public void Update(Project project, int id);
         public Project Get(int id);
@@ -20,21 +20,27 @@ namespace System_do_zarządzania_projektami.Services
     public class ProjectService : IProjectService
     {
         private readonly DatabaseSimulation _databaseSimulation;
-        public ProjectService(DatabaseSimulation databaseSimulation)
+        private readonly ITaskService _taskService;
+        public ProjectService(DatabaseSimulation databaseSimulation, ITaskService taskService)
         {
-            _databaseSimulation = databaseSimulation;      
+            _databaseSimulation = databaseSimulation;
+
+            _taskService = taskService;
+
         }
 
-        public void Create(Project project)
+        public Project Create(Project project)
         {
             if(project != null)
             {
                 _databaseSimulation.projects.Add(project);
                 Console.WriteLine("Poprawnie dodano projekt " +  project.Name);
+                return project;
             }
             else
             {
                 Console.WriteLine("Nie udało się dodać projektu");
+                throw new ArgumentNullException(nameof(project));
             }
         }
 
@@ -81,5 +87,6 @@ namespace System_do_zarządzania_projektami.Services
             Console.WriteLine("Nie znaleziono projektu");
             return null;
         }
+
     }
 }

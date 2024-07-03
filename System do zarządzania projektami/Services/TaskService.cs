@@ -10,6 +10,7 @@ namespace System_do_zarządzania_projektami.Services
         TaskItem Get(int projectId, int taskId);
         void Update(int projectId, int taskId, TaskItem task);
         void Delete(int projectId, int taskId);
+
     }
     public class TaskService : ITaskService
     {
@@ -101,5 +102,6 @@ namespace System_do_zarządzania_projektami.Services
                 Console.WriteLine("Nie znalezioni projektu");
             }
         }
+
     }
 }
