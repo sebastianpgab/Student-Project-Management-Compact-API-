@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -10,34 +11,40 @@ namespace ProjectManagmentSystem.Tests
 {
     public class ProjectServiceTests
     {
+        private Mock<IDatabaseSimulation> _databaseMock;
+        private Mock<ITaskService> _taskServiceMock;
+        private ProjectService _projectService;
+        private List<Project> _projects;
+        public ProjectServiceTests()
+        {
+            _projects = new List<Project>();
+            _databaseMock = new Mock<IDatabaseSimulation>();
+            _taskServiceMock = new Mock<ITaskService>();
+
+            _databaseMock.Setup(db => db.Projects).Returns(_projects);
+            _projectService = new ProjectService(_databaseMock.Object, _taskServiceMock.Object);
+        }
 
         [Fact]
         public void Create_WhenProjectIsNotNull_ShouldReturnProject()
         {
             // Arrange
-            var databaseMock = new Mock<DatabaseSimulation>();
-            var taskServiceMock = new Mock<ITaskService>();
-            var projectService = new ProjectService(databaseMock.Object, taskServiceMock.Object);
             var newProject = new Project { Name = "Test Project" };
 
             // Act
-            var createdProject = projectService.Create(newProject);
+            var createdProject = _projectService.Create(newProject);
 
             // Assert
             Assert.NotNull(createdProject);
-            Assert.Equal(newProject, createdProject);
+            newProject.Should().Be(createdProject);
+            _projects.Should().Contain(newProject);
         }
 
         [Fact]
         public void CrateWhenProjectIsNull_ShouldReturnArgumentNullException()
         {
-            // Arrange
-            var databaseMock = new Mock<DatabaseSimulation>();
-            var taskServiceMock = new Mock<ITaskService>();
-            var projectService = new ProjectService(databaseMock.Object, taskServiceMock.Object);
-
             // Act
-            Action action = () => { projectService.Create(null); };
+            Action action = () => { _projectService.Create(null); };
 
             // Assert
             Assert.Throws<ArgumentNullException>(action);

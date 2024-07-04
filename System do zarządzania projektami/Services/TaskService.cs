@@ -23,7 +23,7 @@ namespace System_do_zarządzania_projektami.Services
 
         public void Create(int projectId, TaskItem task)
         {
-            var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == projectId);
+            var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
             if (project != null)
             {
                 if (project.Tasks == null)
@@ -44,7 +44,7 @@ namespace System_do_zarządzania_projektami.Services
 
         public TaskItem Get(int projectId, int taskId)
         {
-            var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == projectId);
+            var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
             if (project != null)
             {
                 var task = project.Tasks?.FirstOrDefault(t => t.Id == taskId);
@@ -60,7 +60,7 @@ namespace System_do_zarządzania_projektami.Services
 
         public void Update(int projectId, int taskId, TaskItem taskUpdate)
         {
-            var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == projectId);
+            var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
             if (project != null)
             {
                 var task = project.Tasks?.FirstOrDefault(t => t.Id == taskId);
@@ -83,7 +83,7 @@ namespace System_do_zarządzania_projektami.Services
 
         public void Delete(int projectId, int taskId)
         {
-            var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == projectId);
+            var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
             if (project != null)
             {
                 var task = project.Tasks?.FirstOrDefault(t => t.Id == taskId);

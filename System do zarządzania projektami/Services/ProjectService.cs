@@ -19,9 +19,9 @@ namespace System_do_zarządzania_projektami.Services
     }
     public class ProjectService : IProjectService
     {
-        private readonly DatabaseSimulation _databaseSimulation;
+        private readonly IDatabaseSimulation _databaseSimulation;
         private readonly ITaskService _taskService;
-        public ProjectService(DatabaseSimulation databaseSimulation, ITaskService taskService)
+        public ProjectService(IDatabaseSimulation databaseSimulation, ITaskService taskService)
         {
             _databaseSimulation = databaseSimulation;
 
@@ -33,7 +33,7 @@ namespace System_do_zarządzania_projektami.Services
         {
             if(project != null)
             {
-                _databaseSimulation.projects.Add(project);
+                _databaseSimulation.Projects.Add(project);
                 Console.WriteLine("Poprawnie dodano projekt " +  project.Name);
                 return project;
             }
@@ -48,10 +48,10 @@ namespace System_do_zarządzania_projektami.Services
         {
             if(id > 0)
             {
-                var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == id);
+                var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
                 if(project != null) 
                 {
-                    _databaseSimulation.projects.Remove(project);
+                    _databaseSimulation.Projects.Remove(project);
                     Console.WriteLine("Poprawnie usunięto projekt" + project.Name);
                 }
                 else
@@ -66,7 +66,7 @@ namespace System_do_zarządzania_projektami.Services
         {
             if(id > 0)
             {
-                var result = _databaseSimulation.projects.FirstOrDefault(p => p.Id == id);
+                var result = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
                 if (result != null)
                 {
                     result.Name = result.Name is not null ? project.Name : result.Name;
@@ -81,7 +81,7 @@ namespace System_do_zarządzania_projektami.Services
         {
             if (id > 0)
             {
-                var project = _databaseSimulation.projects.FirstOrDefault(p => p.Id == id);
+                var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
                 return project;
             }
             Console.WriteLine("Nie znaleziono projektu");
