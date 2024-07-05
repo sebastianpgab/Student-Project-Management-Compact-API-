@@ -46,20 +46,23 @@ namespace System_do_zarządzania_projektami.Services
 
         public void Delete(int id)
         {
-            if(id > 0)
+            if(id <= 0)
             {
-                var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
-                if(project != null) 
-                {
-                    _databaseSimulation.Projects.Remove(project);
-                    Console.WriteLine("Poprawnie usunięto projekt" + project.Name);
-                }
-                else
-                {
-                    Console.WriteLine("Nie udało się usunąć projektu");
-                }
-
+                throw new ArgumentOutOfRangeException(nameof(id), "Id musi być większe niż zero");
             }
+
+            var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
+
+            if (project != null)
+            {
+                _databaseSimulation.Projects.Remove(project);
+                Console.WriteLine("Poprawnie usunięto projekt" + project.Name);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(project), "Nie znaleziono projektu o podanym id.");
+            }
+
         }
 
         public void Update(Project project, int id)

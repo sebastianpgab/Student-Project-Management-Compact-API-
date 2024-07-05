@@ -41,12 +41,56 @@ namespace ProjectManagmentSystem.Tests
         }
 
         [Fact]
-        public void CrateWhenProjectIsNull_ShouldReturnArgumentNullException()
+        public void Create_WhenProjectIsNull_ShouldReturnArgumentNullException()
         {
             // Act
             Action action = () => { _projectService.Create(null); };
 
             // Assert
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Delete_WhenIdExistInDatabase_RemovesProject()
+        {
+            //Arrange
+            var projects = new List<Project> { new Project { Id = 2, Name = "Test Project" } };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //Act
+            _projectService.Delete(2);
+
+            //Assert
+            projects.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Delete_WhenIdIsNegativeOrZero_ThrowsArgumentOutOfRangeException()
+        {
+            //Arrange
+            var negativeId = -1;
+            var zeroId = 0;
+
+            // Act
+            Action deleteWithNegativeId = () => _projectService.Delete(negativeId);
+            Action deleteWithZeroId = () => _projectService.Delete(zeroId);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(deleteWithNegativeId);
+            Assert.Throws<ArgumentOutOfRangeException>(deleteWithZeroId);
+        }
+
+        [Fact]
+        public void Delete_WhenProjectIsNotFound_ThrowsArgumentNullException()
+        {
+            //Arrange
+            List<Project> projects = new List<Project>() { new Project { Id = 1, Name = "Test" } };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //Act 
+            Action action = () => { _projectService.Delete(2); };
+
+            //Assert
             Assert.Throws<ArgumentNullException>(action);
         }
     }
