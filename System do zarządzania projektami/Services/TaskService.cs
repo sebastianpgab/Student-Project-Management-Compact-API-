@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Server.IIS.Core;
+using System;
 using System.Linq;
 using System_do_zarządzania_projektami.Entites;
 
@@ -6,7 +7,7 @@ namespace System_do_zarządzania_projektami.Services
 {
     public interface ITaskService
     {
-        void Create(int projectId, TaskItem task);
+        TaskItem Create(int projectId, TaskItem task);
         TaskItem Get(int projectId, int taskId);
         void Update(int projectId, int taskId, TaskItem task);
         void Delete(int projectId, int taskId);
@@ -14,16 +15,17 @@ namespace System_do_zarządzania_projektami.Services
     }
     public class TaskService : ITaskService
     {
-        private readonly DatabaseSimulation _databaseSimulation;
+        private readonly IDatabaseSimulation _databaseSimulation;
 
-        public TaskService(DatabaseSimulation databaseSimulation)
+        public TaskService(IDatabaseSimulation databaseSimulation)
         {
             _databaseSimulation = databaseSimulation;
         }
 
-        public void Create(int projectId, TaskItem task)
+        public TaskItem Create(int projectId, TaskItem task)
         {
             var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
+
             if (project != null)
             {
                 if (project.Tasks == null)
@@ -35,10 +37,12 @@ namespace System_do_zarządzania_projektami.Services
                 task.Id = project.Tasks.Any() ? project.Tasks.Max(t => t.Id) + 1 : 1;
                 project.Tasks.Add(task);
                 Console.WriteLine($"Task '{task.Title}' added to project '{project.Name}'.");
+                return task;
             }
             else
             {
                 Console.WriteLine("Nie znalezioni projektu");
+                 throw new ArgumentNullException();
             }
         }
 
