@@ -64,20 +64,16 @@ namespace ProjectManagmentSystem.Tests
             projects.Should().BeEmpty();
         }
 
-        [Fact]
-        public void Delete_WhenIdIsNegativeOrZero_ThrowsArgumentOutOfRangeException()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void Delete_WhenIdIsNegativeOrZero_ThrowsArgumentOutOfRangeException(int number)
         {
-            //Arrange
-            var negativeId = -1;
-            var zeroId = 0;
-
             // Act
-            Action deleteWithNegativeId = () => _projectService.Delete(negativeId);
-            Action deleteWithZeroId = () => _projectService.Delete(zeroId);
+            Action deleteWithNegativeId = () => _projectService.Delete(number);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(deleteWithNegativeId);
-            Assert.Throws<ArgumentOutOfRangeException>(deleteWithZeroId);
         }
 
         [Fact]
@@ -92,6 +88,27 @@ namespace ProjectManagmentSystem.Tests
 
             //Assert
             Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void Update_WhenIdIsNegativeOrZero_ReturnsArgumentOutOfRangeException(int number)
+        {
+            //Arrange
+            var project = new Project()
+            {
+                Name = "New Project Name",
+                Description = "New Project Desc"
+            };
+            var projects = new List<Project> { new Project { Id = 2, Name = "Project Name", Description = "Project Desc"} };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //act
+            Action action = () => _projectService.Update(project, number);
+
+            //Assert
+            Assert.Throws<ArgumentOutOfRangeException>(action);
         }
     }
 }

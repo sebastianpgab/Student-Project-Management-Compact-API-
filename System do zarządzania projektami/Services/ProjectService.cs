@@ -67,17 +67,22 @@ namespace System_do_zarządzania_projektami.Services
 
         public void Update(Project project, int id)
         {
-            if(id > 0)
+            if (id <= 0)
             {
-                var result = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
-                if (result != null)
-                {
-                    result.Name = result.Name is not null ? project.Name : result.Name;
-                    result.Description = result.Description is not null ? project.Description : result.Description;
-                    Console.WriteLine("Poprawnie edytowano projekt" + result.Name);
-                }
+                throw new ArgumentOutOfRangeException(nameof(id), "Id musi być większe niż zero");
             }
 
+            var result = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == id);
+            if (result != null)
+            {
+                result.Name = result.Name is not null ? project.Name : result.Name;
+                result.Description = result.Description is not null ? project.Description : result.Description;
+                Console.WriteLine("Poprawnie edytowano projekt" + result.Name);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(project), "Nie znaleziono projektu o podanym id.");
+            }
         }
 
         public Project Get(int id)
