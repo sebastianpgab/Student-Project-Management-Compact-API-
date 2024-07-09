@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
 using System_do_zarz¹dzania_projektami.Entites;
 using System_do_zarz¹dzania_projektami.Services;
 using Xunit;
@@ -41,7 +43,7 @@ namespace ProjectManagmentSystem.Tests
         }
 
         [Fact]
-        public void Create_WhenProjectIsNull_ShouldReturnArgumentNullException()
+        public void Create_WhenProjectIsNull_ShouldThrowsArgumentNullException()
         {
             // Act
             Action action = () => { _projectService.Create(null); };
@@ -93,7 +95,8 @@ namespace ProjectManagmentSystem.Tests
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
-        public void Update_WhenIdIsNegativeOrZero_ReturnsArgumentOutOfRangeException(int number)
+
+        public void Update_WhenIdIsNegativeOrZero_ThrowssArgumentOutOfRangeException(int number)
         {
             //Arrange
             var project = new Project()
@@ -109,6 +112,41 @@ namespace ProjectManagmentSystem.Tests
 
             //Assert
             Assert.Throws<ArgumentOutOfRangeException>(action);
+        }
+
+        [Fact]
+        public void Update_WhenProjectDoesNotExist_ThrowsArgumentNullException()
+        {
+            //Arrange
+            Project project = null;
+            var id = 1;
+            var projects = new List<Project> { new Project { Id = 2, Name = "Project Name", Description = "Project Desc" } };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //Act
+            Action action = () => _projectService.Update(project, id);
+
+            //Assert
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Update_WhenProjectExists_UpdatesProject()
+        {
+            //Arrange
+            Project project = new Project { Id = 2, Name = "Project Name Updated", Description = "Project Desc Updated" };
+
+            var projects = new List<Project> { new Project { Id = 2, Name = "Project Name", Description = "Project Desc" } };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //Act
+            _projectService.Update(project, 2);
+
+            //Assert
+            var updatedProject = projects.FirstOrDefault(p => p.Id == 2);
+            updatedProject.Should().NotBeNull();
+            updatedProject.Description.Should().Be("Project Desc Updated");
+            updatedProject.Name.Should().Be("Project Name Updated");
         }
     }
 }
