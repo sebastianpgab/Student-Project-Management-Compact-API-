@@ -148,6 +148,44 @@ namespace ProjectManagmentSystem.Tests
             updatedProject.Description.Should().Be("Project Desc Updated");
             updatedProject.Name.Should().Be("Project Name Updated");
         }
+
+        [Fact]
+        public void Get_WhenIdIsPositiveAndProjectExists_ShouldReturnProject()
+        {
+            // Arrange
+            var project = new Project { Id = 1, Name = "Test Project" };
+            _projects.Add(project);
+            _databaseMock.Setup(p => p.Projects).Returns(_projects);
+
+            // Act
+            var result = _projectService.Get(1);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(project);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void Get_WhenIdIsNegativeOrZero_ShouldReturnNull(int id)
+        {
+            // Act
+            var result = _projectService.Get(id);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public void Get_WhenProjectDoesNotExist_ShouldReturnNull()
+        {
+            // Act
+            var result = _projectService.Get(999);
+
+            // Assert
+            result.Should().BeNull();
+        }
     }
 }
 
