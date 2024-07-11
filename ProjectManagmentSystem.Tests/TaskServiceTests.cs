@@ -41,5 +41,88 @@ namespace ProjectManagmentSystem.Tests
             task.Should().BeOfType<TaskItem>();
             task.Should().Be(taskItem);
         }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void Update_WhenProjectIdIsNegativeOrZero_ThrowArgumentNullException(int projectId)
+        {
+            //Arrange
+            var taskItem = new TaskItem();
+
+            //Act
+            
+            Action action = () => _taskService.Create(projectId, taskItem);
+
+            //Assert
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Update_WhenTaskItemIsNull_ThrowArgumentNullException()
+        {
+            //Arrange
+            TaskItem taskItem = null;
+            var projects = new List<Project>() {
+                new Project 
+                { 
+                    Id = 1, Description = "Project example", Name = "Project example"
+                } 
+            };
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //
+            Action action = () => _taskService.Update(1, 1, taskItem);
+
+            //Assert
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Update_WhenTaskItemIsNotNull_UpdateTaskItem()
+        {
+            // Arrange
+            List<TaskItem> tasks = new List<TaskItem>();
+            TaskItem taskItemToUpdate = new TaskItem()
+            {
+                Id = 1,
+                ProjectId = 1,
+                Status = Status.Cancelled,
+                Title = "Title updated"
+            };
+
+            TaskItem taskItem = new TaskItem()
+            {
+                Id = 1,
+                ProjectId = 1,
+                Status = Status.In_Progress,
+                Title = "Title example"
+            };
+            tasks.Add(taskItem);
+
+            var projects = new List<Project>()
+            {
+                new Project
+                {
+                    Id = 1,
+                    Description = "Project example",
+                    Name = "Project example",
+                    Tasks = tasks
+                }
+            };
+
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            // Act
+            _taskService.Update(1, 1, taskItemToUpdate);
+
+            //Assert
+            var updatedTask = tasks.FirstOrDefault(t => t.ProjectId == 1 && t.Id == 1);
+            updatedTask.Status.Should().Be(Status.Cancelled);
+            updatedTask.Title.Should().Be("Title updated");
+            updatedTask.Id.Should().Be(1);
+            updatedTask.ProjectId.Should().Be(1);
+        }
+
     }
 }
