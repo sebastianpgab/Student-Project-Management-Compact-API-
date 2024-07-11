@@ -77,11 +77,13 @@ namespace System_do_zarządzania_projektami.Services
                 else
                 {
                     Console.WriteLine("Nie znalezionio zadania");
+                    throw new ArgumentNullException(nameof(task), "Task not found");
                 }
             }
             else
             {
                 Console.WriteLine("Nie znalezioni projektu");
+                throw new ArgumentNullException(nameof(project), "Project not found");
             }
         }
 
