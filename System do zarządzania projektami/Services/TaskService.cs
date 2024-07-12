@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Server.IIS.Core;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System_do_zarządzania_projektami.Entites;
 
 namespace System_do_zarządzania_projektami.Services
@@ -76,19 +77,23 @@ namespace System_do_zarządzania_projektami.Services
                 }
                 else
                 {
-                    Console.WriteLine("Nie znalezionio zadania");
+                    Console.WriteLine("Nie znaleziono zadania");
                     throw new ArgumentNullException(nameof(task), "Task not found");
                 }
             }
             else
             {
-                Console.WriteLine("Nie znalezioni projektu");
+                Console.WriteLine("Nie znaleziono projektu");
                 throw new ArgumentNullException(nameof(project), "Project not found");
             }
         }
 
         public void Delete(int projectId, int taskId)
         {
+            if(projectId <= 0 || taskId <= 0)
+            {
+                throw new ArgumentNullException("ProjectId or TaskId is zero or negativ");
+            }
             var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
             if (project != null)
             {
@@ -100,12 +105,14 @@ namespace System_do_zarządzania_projektami.Services
                 }
                 else
                 {
-                    Console.WriteLine("Nie znalezionio zadania");
+                    Console.WriteLine("Nie znaleziono zadania");
+                    throw new ArgumentNullException(nameof(task), "Task not found");
                 }
             }
             else
             {
-                Console.WriteLine("Nie znalezioni projektu");
+                Console.WriteLine("Nie znaleziono projektu");
+                throw new ArgumentNullException(nameof(project), "Project not found");
             }
         }
 
