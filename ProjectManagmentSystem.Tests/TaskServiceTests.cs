@@ -124,5 +124,55 @@ namespace ProjectManagmentSystem.Tests
             updatedTask.ProjectId.Should().Be(1);
         }
 
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(-1, 1)]
+        [InlineData(1, 0)]
+        [InlineData(1, -1)]
+        [InlineData(0, 0)]
+        [InlineData(-1, -1)]
+        public void Delete_WhenProjectIdAndTaskIdIsNegativeOrZero_ThrowArgumentNullException(int projectId, int taskId)
+        {
+            // Act
+            Action action = () => _taskService.Delete(projectId, taskId);
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(action);
+        }
+
+        [Fact]
+        public void Delete_WhenProjectAndTaskIsNotNull_DeletesTaskFromProject()
+        {
+            // Arrange
+            var project = new Project
+            {
+                Id = 1,
+                Name = "Example Project",
+                Description = "Example Project",
+                Tasks = new List<TaskItem>
+        {
+            new TaskItem
+            {
+                Id = 1,
+                ProjectId = 1,
+                Status = Status.Completed,
+                Title = "Example"
+            }
+        }
+            };
+            var projects = new List<Project> { project };
+
+            _databaseMock.Setup(db => db.Projects).Returns(projects);
+
+            // Act
+            _taskService.Delete(1, 1);
+
+            // Assert
+            var updatedProject = projects.FirstOrDefault(p => p.Id == 1);
+            updatedProject.Should().NotBeNull();
+            updatedProject.Tasks.Should().BeEmpty();
+
+            _databaseMock.Verify(db => db.Projects, Times.Once);
+        }
     }
 }
