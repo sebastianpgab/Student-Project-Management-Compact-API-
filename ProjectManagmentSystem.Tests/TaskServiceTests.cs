@@ -8,6 +8,7 @@ using System_do_zarządzania_projektami.Entites;
 using System_do_zarządzania_projektami.Services;
 using Xunit;
 using FluentAssertions;
+using System.Xml.Linq;
 
 namespace ProjectManagmentSystem.Tests
 {
@@ -173,6 +174,56 @@ namespace ProjectManagmentSystem.Tests
             updatedProject.Tasks.Should().BeEmpty();
 
             _databaseMock.Verify(db => db.Projects, Times.Once);
+        }
+
+        [Theory]
+        [InlineData(-1,1)]
+        [InlineData(0,1)]
+        [InlineData(1,-1)]
+        [InlineData(1,0)]
+        public void Get_WhenProjectIdOrTaskIdIsNegativeOrZero_ThrowsKeyNotFoundException(int taskId, int projectId)
+        {
+            //Arrange
+            _databaseMock.Setup(p => p.Projects).Returns(new List<Project>());
+
+            //Act
+            Action action = () => _taskService.Get(taskId, projectId);
+
+            //Assert
+            Assert.Throws<KeyNotFoundException>(action);
+        }
+
+        [Fact]
+        public void Get_WhenProjectAndTaskExistInDatabase_ReturnTaskItem()
+        {
+            //Arrange
+            var taskItem = new TaskItem
+            {
+                Id = 1,
+                ProjectId = 1,
+                Status = Status.Completed
+            };
+            var taskItems = new List<TaskItem>();
+            taskItems.Add(taskItem);
+
+            var project = new Project()
+            {
+                Id = 1,
+                Name = "Name Example",
+                Description = "Description Example",
+                Tasks = taskItems
+            };
+            var projects = new List<Project>();
+            projects.Add(project);
+
+            _databaseMock.Setup(p => p.Projects).Returns(projects);
+
+            //Act
+            var result = _taskService.Get(1, 1);
+
+            //Assert
+            Assert.Equal(taskItem, result);
+            _databaseMock.Verify(p => p.Projects, Times.Once());
         }
     }
 }
