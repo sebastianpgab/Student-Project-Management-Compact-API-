@@ -50,16 +50,17 @@ namespace System_do_zarządzania_projektami.Services
         public TaskItem Get(int projectId, int taskId)
         {
             var project = _databaseSimulation.Projects.FirstOrDefault(p => p.Id == projectId);
-            if (project != null)
+            if (project == null)
             {
-                var task = project.Tasks?.FirstOrDefault(t => t.Id == taskId);
-                if (task != null)
-                {
-                    return task;
-                }
+                throw new KeyNotFoundException(nameof(taskId));
             }
-            Console.WriteLine("Nie znaleziono zadania lub projektu");
-            return null;
+            var task = project.Tasks?.FirstOrDefault(t => t.Id == taskId);
+
+            if (task == null)
+            {
+                throw new KeyNotFoundException(nameof(projectId));
+            }
+            return task;
         }
 
 
