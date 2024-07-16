@@ -9,6 +9,7 @@ using System_do_zarządzania_projektami.Services;
 using Xunit;
 using FluentAssertions;
 using System.Xml.Linq;
+using System.Runtime.Serialization;
 
 namespace ProjectManagmentSystem.Tests
 {
@@ -17,12 +18,20 @@ namespace ProjectManagmentSystem.Tests
         private readonly Mock<IDatabaseSimulation> _databaseMock;
         private readonly TaskService _taskService;
 
-
         public TaskServiceTests()
         {
             _databaseMock = new Mock<IDatabaseSimulation>();
             _taskService = new TaskService(_databaseMock.Object);
         }
+
+        public static IEnumerable<object[]> GetNegativAndZeroData()
+        {
+            yield return new object[] { -1, 1 };
+            yield return new object[] { 1, -1 };
+            yield return new object[] { 1, -1 };
+            yield return new object[] { 1,  0 };
+        }
+
         [Fact]
         public void Create_WhenTaskItemIsNotNull_ReturnsTaskItem()
         {
@@ -126,12 +135,7 @@ namespace ProjectManagmentSystem.Tests
         }
 
         [Theory]
-        [InlineData(0, 1)]
-        [InlineData(-1, 1)]
-        [InlineData(1, 0)]
-        [InlineData(1, -1)]
-        [InlineData(0, 0)]
-        [InlineData(-1, -1)]
+        [MemberData(nameof(GetNegativAndZeroData))]
         public void Delete_WhenProjectIdAndTaskIdIsNegativeOrZero_ThrowArgumentNullException(int projectId, int taskId)
         {
             // Act
@@ -177,10 +181,7 @@ namespace ProjectManagmentSystem.Tests
         }
 
         [Theory]
-        [InlineData(-1,1)]
-        [InlineData(0,1)]
-        [InlineData(1,-1)]
-        [InlineData(1,0)]
+        [MemberData(nameof(GetNegativAndZeroData))]
         public void Get_WhenProjectIdOrTaskIdIsNegativeOrZero_ThrowsKeyNotFoundException(int taskId, int projectId)
         {
             //Arrange
